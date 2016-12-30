@@ -91,7 +91,7 @@ view model =
         )
       ),
       Html.Attributes.height 600,
-      Html.Attributes.width 800
+      Html.Attributes.width 1000
     ] []
   ]
 
