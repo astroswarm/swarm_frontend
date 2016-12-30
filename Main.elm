@@ -57,12 +57,15 @@ view model =
       List.map (\
         service ->
           Html.li [ Html.Attributes.class "collection-item" ] [
-            Html.a [
-              Html.Attributes.href( "javascript: return false;" ),
-              Html.Events.onClick(
-                ServiceSelect service.name
-              )
-            ] [ Html.text service.name ]
+            if service.name == model.selected_service_name then
+              Html.text service.name
+            else
+              Html.a [
+                Html.Attributes.href( "javascript: return false;" ),
+                Html.Events.onClick(
+                  ServiceSelect service.name
+                )
+              ] [ Html.text service.name ]
           ]
       ) model.services
     ),
