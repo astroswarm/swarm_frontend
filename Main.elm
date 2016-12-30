@@ -38,22 +38,35 @@ initialModel =
 
 -- Update
 
+type Message = NoOp
+
+update message model =
+  case message of
+    NoOp ->
+      model
+
 -- View
-view =
+view model =
   Html.div [ Html.Attributes.class "container" ] [
+    Html.p [ ] [ Html.text "Choose a service to run:" ],
     Html.ul [ Html.Attributes.class "collection" ] (
       List.map (\
         service ->
           Html.li [ Html.Attributes.class "collection-item" ] [
             Html.a [
               Html.Attributes.href(
-                String.concat(["http://localhost:", toString(service.websockify_port)])
+                String.concat(["http://localhost:6080/vnc_auto.html?host=localhost&port=", toString(service.websockify_port)])
               )
             ] [ Html.text service.name ]
           ]
-      ) initialModel.services
+      ) model.services
     )
   ]
 
 main =
-  view
+  Html.beginnerProgram
+    {
+      model = initialModel,
+      view = view,
+      update = update
+    }
