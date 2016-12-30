@@ -2,6 +2,8 @@
 
 import Html
 import Html.Attributes
+import Html.Events
+import Maybe
 
 -- Model
 type alias Model =
@@ -33,17 +35,19 @@ initialModel =
           websockify_port = 6103
         }
       ],
-     selected_service_index = -1
+     selected_service_index = 1
   }
 
 -- Update
 
-type Message = NoOp
+type Message = NoOp | ServiceSelectIndex Int
 
 update message model =
   case message of
     NoOp ->
       model
+    ServiceSelectIndex new_service_index ->
+      { model | selected_service_index = new_service_index }
 
 -- View
 view model =
@@ -54,13 +58,51 @@ view model =
         service ->
           Html.li [ Html.Attributes.class "collection-item" ] [
             Html.a [
-              Html.Attributes.href(
-                String.concat(["http://localhost:6080/vnc_auto.html?host=localhost&port=", toString(service.websockify_port)])
+              Html.Attributes.href( "javascript: return false;" ),
+              Html.Events.onClick(
+                ServiceSelectIndex(service.websockify_port - 6100)
               )
             ] [ Html.text service.name ]
           ]
       ) model.services
-    )
+    ),
+    Html.p [ ] [
+      Html.text(
+        String.concat([
+          "Selected service index: ",
+          toString(
+            model.selected_service_index
+          )
+        ])
+      )
+    ],
+    Html.p [ ] [
+      Html.text(
+        String.concat([
+          "Selected service: ",
+          List.filter (\n -> n.websockify_port == 6100 + model.selected_service_index) model.services
+            |> List.map (\n -> n.name)
+            |> List.head
+            |> Maybe.withDefault ""
+        ])
+      )
+    ],
+    Html.iframe [
+      Html.Attributes.src(
+        String.concat(
+          [
+            "http://localhost:6080/vnc_auto.html?host=localhost&port=", toString(
+              List.filter (\n -> n.websockify_port == 6100 + model.selected_service_index) model.services
+                |> List.map (\n -> n.websockify_port)
+                |> List.head
+                |> Maybe.withDefault 0
+            )
+          ]
+        )
+      ),
+      Html.Attributes.height 600,
+      Html.Attributes.width 800
+    ] []
   ]
 
 main =
