@@ -12,7 +12,7 @@ type alias Model =
 type alias Service =
   {
     name: String,
-    port_offset: Int
+    websockify_port: Int
   }
 
 initialModel : Model
@@ -22,15 +22,15 @@ initialModel =
       [
         {
           name = "Lin Guider (Autoguider)",
-          port_offset = 2
+          websockify_port = 6101
         },
         {
           name = "PHD2 (Autoguider)",
-          port_offset = 1
+          websockify_port = 6102
         },
         {
           name = "Open Sky Imager (Camera Controller)",
-          port_offset = 3
+          websockify_port = 6103
         }
       ],
      selected_service_index = -1
@@ -44,7 +44,13 @@ view =
     Html.ul [ Html.Attributes.class "collection" ] (
       List.map (\
         service ->
-          Html.li [ Html.Attributes.class "collection-item" ] [ Html.text service.name ]
+          Html.li [ Html.Attributes.class "collection-item" ] [
+            Html.a [
+              Html.Attributes.href(
+                String.concat(["http://localhost:", toString(service.websockify_port)])
+              )
+            ] [ Html.text service.name ]
+          ]
       ) initialModel.services
     )
   ]
