@@ -9,7 +9,7 @@ import Maybe
 type alias Model =
   {
     services: List Service,
-    selected_service_index: Int
+    selected_service_name: String
   }
 type alias Service =
   {
@@ -35,19 +35,19 @@ initialModel =
           websockify_port = 6103
         }
       ],
-     selected_service_index = 1
+     selected_service_name = "Lin Guider (Autoguider)"
   }
 
 -- Update
 
-type Message = NoOp | ServiceSelectIndex Int
+type Message = NoOp | ServiceSelect String
 
 update message model =
   case message of
     NoOp ->
       model
-    ServiceSelectIndex new_service_index ->
-      { model | selected_service_index = new_service_index }
+    ServiceSelect new_service ->
+      { model | selected_service_name = new_service }
 
 -- View
 view model =
@@ -60,7 +60,7 @@ view model =
             Html.a [
               Html.Attributes.href( "javascript: return false;" ),
               Html.Events.onClick(
-                ServiceSelectIndex(service.websockify_port - 6100)
+                ServiceSelect service.name
               )
             ] [ Html.text service.name ]
           ]
@@ -69,18 +69,8 @@ view model =
     Html.p [ ] [
       Html.text(
         String.concat([
-          "Selected service index: ",
-          toString(
-            model.selected_service_index
-          )
-        ])
-      )
-    ],
-    Html.p [ ] [
-      Html.text(
-        String.concat([
           "Selected service: ",
-          List.filter (\n -> n.websockify_port == 6100 + model.selected_service_index) model.services
+          List.filter (\n -> n.name == model.selected_service_name) model.services
             |> List.map (\n -> n.name)
             |> List.head
             |> Maybe.withDefault ""
@@ -92,7 +82,7 @@ view model =
         String.concat(
           [
             "http://localhost:6080/vnc_auto.html?host=localhost&port=", toString(
-              List.filter (\n -> n.websockify_port == 6100 + model.selected_service_index) model.services
+              List.filter (\n -> n.name == model.selected_service_name) model.services
                 |> List.map (\n -> n.websockify_port)
                 |> List.head
                 |> Maybe.withDefault 0
