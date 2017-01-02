@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
 
-elm-make Main.elm --output build/index.html --yes
+elm-make Main.elm --output main.js --yes
 
+cp index.html build/
+cp main.js build/
