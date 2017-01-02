@@ -8260,11 +8260,15 @@ var _user$project$Main$update = F2(
 	function (message, model) {
 		var _p0 = message;
 		if (_p0.ctor === 'NoOp') {
-			return model;
+			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		} else {
-			return _elm_lang$core$Native_Utils.update(
-				model,
-				{selected_service_name: _p0._0});
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{selected_service_name: _p0._0}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
 		}
 	});
 var _user$project$Main$initialModel = {
@@ -8281,11 +8285,25 @@ var _user$project$Main$initialModel = {
 			}
 		}
 	},
-	selected_service_name: 'Lin Guider (Autoguider)'
+	selected_service_name: 'Lin Guider (Autoguider)',
+	hostname: '???'
 };
-var _user$project$Main$Model = F2(
-	function (a, b) {
-		return {services: a, selected_service_name: b};
+var _user$project$Main$init = function (_p1) {
+	var _p2 = _p1;
+	return {
+		ctor: '_Tuple2',
+		_0: _elm_lang$core$Native_Utils.update(
+			_user$project$Main$initialModel,
+			{hostname: _p2.hostname}),
+		_1: _elm_lang$core$Platform_Cmd$none
+	};
+};
+var _user$project$Main$Flags = function (a) {
+	return {hostname: a};
+};
+var _user$project$Main$Model = F3(
+	function (a, b, c) {
+		return {services: a, selected_service_name: b, hostname: c};
 	});
 var _user$project$Main$Service = F2(
 	function (a, b) {
@@ -8391,54 +8409,89 @@ var _user$project$Main$view = function (model) {
 					_1: {
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$iframe,
+							_elm_lang$html$Html$p,
+							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$src(
+								_0: _elm_lang$html$Html$text(
 									_elm_lang$core$String$concat(
 										{
 											ctor: '::',
-											_0: 'http://localhost:6080/vnc_auto.html?host=localhost&port=',
+											_0: 'URL: ',
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$core$Basics$toString(
-													A2(
-														_elm_lang$core$Maybe$withDefault,
-														0,
-														_elm_lang$core$List$head(
-															A2(
-																_elm_lang$core$List$map,
-																function (n) {
-																	return n.websockify_port;
-																},
-																A2(
-																	_elm_lang$core$List$filter,
-																	function (n) {
-																		return _elm_lang$core$Native_Utils.eq(n.name, model.selected_service_name);
-																	},
-																	model.services))))),
+												_0: model.hostname,
 												_1: {ctor: '[]'}
 											}
 										})),
-								_1: {
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$iframe,
+								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$height(600),
+									_0: _elm_lang$html$Html_Attributes$src(
+										_elm_lang$core$String$concat(
+											{
+												ctor: '::',
+												_0: 'http://localhost:6080/vnc_auto.html?host=localhost&port=',
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$core$Basics$toString(
+														A2(
+															_elm_lang$core$Maybe$withDefault,
+															0,
+															_elm_lang$core$List$head(
+																A2(
+																	_elm_lang$core$List$map,
+																	function (n) {
+																		return n.websockify_port;
+																	},
+																	A2(
+																		_elm_lang$core$List$filter,
+																		function (n) {
+																			return _elm_lang$core$Native_Utils.eq(n.name, model.selected_service_name);
+																		},
+																		model.services))))),
+													_1: {ctor: '[]'}
+												}
+											})),
 									_1: {
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$width(1000),
-										_1: {ctor: '[]'}
+										_0: _elm_lang$html$Html_Attributes$height(600),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$width(1000),
+											_1: {ctor: '[]'}
+										}
 									}
-								}
-							},
-							{ctor: '[]'}),
-						_1: {ctor: '[]'}
+								},
+								{ctor: '[]'}),
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			}
 		});
 };
-var _user$project$Main$main = _elm_lang$html$Html$beginnerProgram(
-	{model: _user$project$Main$initialModel, view: _user$project$Main$view, update: _user$project$Main$update})();
+var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
+	{
+		init: _user$project$Main$init,
+		view: _user$project$Main$view,
+		update: _user$project$Main$update,
+		subscriptions: function (_p3) {
+			return _elm_lang$core$Platform_Sub$none;
+		}
+	})(
+	A2(
+		_elm_lang$core$Json_Decode$andThen,
+		function (hostname) {
+			return _elm_lang$core$Json_Decode$succeed(
+				{hostname: hostname});
+		},
+		A2(_elm_lang$core$Json_Decode$field, 'hostname', _elm_lang$core$Json_Decode$string)));
 var _user$project$Main$NoOp = {ctor: 'NoOp'};
 
 var Elm = {};

@@ -6,10 +6,16 @@ import Html.Events
 import Maybe
 
 -- Model
+
+type alias Flags =
+  {
+    hostname: String
+  }
 type alias Model =
   {
     services: List Service,
-    selected_service_name: String
+    selected_service_name: String,
+    hostname: String
   }
 type alias Service =
   {
@@ -35,19 +41,22 @@ initialModel =
           websockify_port = 6103
         }
       ],
-     selected_service_name = "Lin Guider (Autoguider)"
+     selected_service_name = "Lin Guider (Autoguider)",
+     hostname = "???"
   }
 
 -- Update
 
 type Message = NoOp | ServiceSelect String
 
+update: Message -> Model -> (Model, Cmd msg)
+
 update message model =
   case message of
     NoOp ->
-      model
+      (model, Cmd.none)
     ServiceSelect new_service ->
-      { model | selected_service_name = new_service }
+      ({ model | selected_service_name = new_service }, Cmd.none)
 
 -- View
 view model =
@@ -80,6 +89,14 @@ view model =
         ])
       )
     ],
+    Html.p [ ] [
+      Html.text(
+        String.concat([
+          "URL: ",
+          model.hostname
+        ])
+      )
+    ],
     Html.iframe [
       Html.Attributes.src(
         String.concat(
@@ -98,10 +115,15 @@ view model =
     ] []
   ]
 
+init : Flags -> (Model, Cmd Message)
+init {hostname} =
+  ({ initialModel | hostname = hostname }, Cmd.none)
+
 main =
-  Html.beginnerProgram
+  Html.programWithFlags
     {
-      model = initialModel,
+      init = init,
       view = view,
-      update = update
+      update = update,
+      subscriptions = \_ -> Sub.none
     }
