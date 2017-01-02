@@ -23,27 +23,32 @@ type alias Service =
     websockify_port: Int
   }
 
-initialModel : Model
-initialModel =
-  {
-    services =
-      [
-        {
-          name = "Lin Guider (Autoguider)",
-          websockify_port = 6101
-        },
-        {
-          name = "PHD2 (Autoguider)",
-          websockify_port = 6102
-        },
-        {
-          name = "Open Sky Imager (Camera Controller)",
-          websockify_port = 6103
-        }
-      ],
-     selected_service_name = "Lin Guider (Autoguider)",
-     hostname = "???"
-  }
+-- Model Initialization
+
+init : Flags -> (Model, Cmd Message)
+init {hostname} =
+  (
+    {
+      services =
+        [
+          {
+            name = "Lin Guider (Autoguider)",
+            websockify_port = 6101
+          },
+          {
+            name = "PHD2 (Autoguider)",
+            websockify_port = 6102
+          },
+          {
+            name = "Open Sky Imager (Camera Controller)",
+            websockify_port = 6103
+          }
+        ],
+       selected_service_name = "Lin Guider (Autoguider)",
+       hostname = hostname
+    },
+    Cmd.none
+  )
 
 -- Update
 
@@ -114,10 +119,6 @@ view model =
       Html.Attributes.width 1000
     ] []
   ]
-
-init : Flags -> (Model, Cmd Message)
-init {hostname} =
-  ({ initialModel | hostname = hostname }, Cmd.none)
 
 main =
   Html.programWithFlags

@@ -8271,30 +8271,27 @@ var _user$project$Main$update = F2(
 			};
 		}
 	});
-var _user$project$Main$initialModel = {
-	services: {
-		ctor: '::',
-		_0: {name: 'Lin Guider (Autoguider)', websockify_port: 6101},
-		_1: {
-			ctor: '::',
-			_0: {name: 'PHD2 (Autoguider)', websockify_port: 6102},
-			_1: {
-				ctor: '::',
-				_0: {name: 'Open Sky Imager (Camera Controller)', websockify_port: 6103},
-				_1: {ctor: '[]'}
-			}
-		}
-	},
-	selected_service_name: 'Lin Guider (Autoguider)',
-	hostname: '???'
-};
 var _user$project$Main$init = function (_p1) {
 	var _p2 = _p1;
 	return {
 		ctor: '_Tuple2',
-		_0: _elm_lang$core$Native_Utils.update(
-			_user$project$Main$initialModel,
-			{hostname: _p2.hostname}),
+		_0: {
+			services: {
+				ctor: '::',
+				_0: {name: 'Lin Guider (Autoguider)', websockify_port: 6101},
+				_1: {
+					ctor: '::',
+					_0: {name: 'PHD2 (Autoguider)', websockify_port: 6102},
+					_1: {
+						ctor: '::',
+						_0: {name: 'Open Sky Imager (Camera Controller)', websockify_port: 6103},
+						_1: {ctor: '[]'}
+					}
+				}
+			},
+			selected_service_name: 'Lin Guider (Autoguider)',
+			hostname: _p2.hostname
+		},
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
 };
