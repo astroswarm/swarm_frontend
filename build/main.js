@@ -8433,26 +8433,42 @@ var _user$project$Main$view = function (model) {
 										_elm_lang$core$String$concat(
 											{
 												ctor: '::',
-												_0: 'http://localhost:6080/vnc_auto.html?host=localhost&port=',
+												_0: 'http://',
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$core$Basics$toString(
-														A2(
-															_elm_lang$core$Maybe$withDefault,
-															0,
-															_elm_lang$core$List$head(
-																A2(
-																	_elm_lang$core$List$map,
-																	function (n) {
-																		return n.websockify_port;
-																	},
-																	A2(
-																		_elm_lang$core$List$filter,
-																		function (n) {
-																			return _elm_lang$core$Native_Utils.eq(n.name, model.selected_service_name);
-																		},
-																		model.services))))),
-													_1: {ctor: '[]'}
+													_0: model.hostname,
+													_1: {
+														ctor: '::',
+														_0: ':6080/vnc_auto.html?host=',
+														_1: {
+															ctor: '::',
+															_0: model.hostname,
+															_1: {
+																ctor: '::',
+																_0: '&port=',
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$core$Basics$toString(
+																		A2(
+																			_elm_lang$core$Maybe$withDefault,
+																			0,
+																			_elm_lang$core$List$head(
+																				A2(
+																					_elm_lang$core$List$map,
+																					function (n) {
+																						return n.websockify_port;
+																					},
+																					A2(
+																						_elm_lang$core$List$filter,
+																						function (n) {
+																							return _elm_lang$core$Native_Utils.eq(n.name, model.selected_service_name);
+																						},
+																						model.services))))),
+																	_1: {ctor: '[]'}
+																}
+															}
+														}
+													}
 												}
 											})),
 									_1: {

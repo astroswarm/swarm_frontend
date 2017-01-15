@@ -106,7 +106,11 @@ view model =
       Html.Attributes.src(
         String.concat(
           [
-            "http://localhost:6080/vnc_auto.html?host=localhost&port=", toString(
+            "http://",
+            model.hostname,
+            ":6080/vnc_auto.html?host=",
+            model.hostname,
+            "&port=", toString(
               List.filter (\n -> n.name == model.selected_service_name) model.services
                 |> List.map (\n -> n.websockify_port)
                 |> List.head
