@@ -8285,7 +8285,11 @@ var _user$project$Main$init = function (_p1) {
 					_1: {
 						ctor: '::',
 						_0: {name: 'Open Sky Imager (Camera Controller)', websockify_port: 6103},
-						_1: {ctor: '[]'}
+						_1: {
+							ctor: '::',
+							_0: {name: 'Stellarium (Planetarium)', websockify_port: 6104},
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			},

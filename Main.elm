@@ -42,6 +42,10 @@ init {hostname} =
           {
             name = "Open Sky Imager (Camera Controller)",
             websockify_port = 6103
+          },
+          {
+            name = "Stellarium (Planetarium)",
+            websockify_port = 6104
           }
         ],
        selected_service_name = "Lin Guider (Autoguider)",
