@@ -64,65 +64,65 @@ update message model =
       ({ model | selected_service_name = new_service }, Cmd.none)
 
 
-viewServicesList model =
-  Html.div [] [
-    Html.p [ ] [ Html.text "Choose a service to run:" ],
-    Html.ul [ Html.Attributes.class "collection" ] (
-      List.map (\
-        service ->
-          Html.li [ Html.Attributes.class "collection-item" ] [
-            if service.name == model.selected_service_name then
-              Html.text service.name
-            else
-              Html.a [
-                Html.Attributes.href "javascript: return false;",
-                Html.Events.onClick (ServiceSelect service.name)
-              ] [ Html.text service.name ]
-          ]
-      ) model.services
-    )
-  ]
-
-
-viewStatusInfo model =
-  Html.div [] [
-    Html.p [ ] [
-      Html.text(
-        "Selected service: " ++ (
-          List.filter (\n -> n.name == model.selected_service_name) model.services
-            |> List.map (\n -> n.name)
-            |> List.head
-            |> Maybe.withDefault ""
-        )
-      )
-    ],
-    Html.p [ ] [ Html.text ("URL: " ++ model.hostname) ]
-  ]
-
-
-viewServiceEmbed model =
-  Html.iframe [
-    Html.Attributes.src(
-      "http://" ++ model.hostname ++ ":6080/vnc_auto.html?host=" ++ model.hostname ++ "&port=" ++ (
-        List.filter (\n -> n.name == model.selected_service_name) model.services
-          |> List.map (\n -> n.websockify_port)
-          |> List.head
-          |> Maybe.withDefault 0
-          |> toString
-      )
-    ),
-    Html.Attributes.height 600,
-    Html.Attributes.width 1000
-  ] []
-
-
 -- View
 view model =
-  Html.div [ Html.Attributes.class "container" ] [
-    viewServicesList model,
-    viewStatusInfo model,
-    viewServiceEmbed model
-  ]
+  let
+    viewServicesList =
+      Html.div [] [
+        Html.p [ ] [ Html.text "Choose a service to run:" ],
+        Html.ul [ Html.Attributes.class "collection" ] (
+          List.map (\
+            service ->
+              Html.li [ Html.Attributes.class "collection-item" ] [
+                if service.name == model.selected_service_name then
+                  Html.text service.name
+                else
+                  Html.a [
+                    Html.Attributes.href "javascript: return false;",
+                    Html.Events.onClick (ServiceSelect service.name)
+                  ] [ Html.text service.name ]
+              ]
+          ) model.services
+        )
+      ]
+
+
+    viewStatusInfo =
+      Html.div [] [
+        Html.p [ ] [
+          Html.text(
+            "Selected service: " ++ (
+              List.filter (\n -> n.name == model.selected_service_name) model.services
+                |> List.map (\n -> n.name)
+                |> List.head
+                |> Maybe.withDefault ""
+            )
+          )
+        ],
+        Html.p [ ] [ Html.text ("URL: " ++ model.hostname) ]
+      ]
+
+
+    viewServiceEmbed =
+      Html.iframe [
+        Html.Attributes.src(
+          "http://" ++ model.hostname ++ ":6080/vnc_auto.html?host=" ++ model.hostname ++ "&port=" ++ (
+            List.filter (\n -> n.name == model.selected_service_name) model.services
+              |> List.map (\n -> n.websockify_port)
+              |> List.head
+              |> Maybe.withDefault 0
+              |> toString
+          )
+        ),
+        Html.Attributes.height 600,
+        Html.Attributes.width 1000
+      ] []
+  in
+    Html.div [ Html.Attributes.class "container" ] [
+      viewServicesList,
+      viewStatusInfo,
+      viewServiceEmbed
+    ]
 
 main =
   Html.programWithFlags
