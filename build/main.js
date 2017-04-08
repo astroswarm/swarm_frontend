@@ -1564,8 +1564,7 @@ function toString(v)
 	var type = typeof v;
 	if (type === 'function')
 	{
-		var name = v.func ? v.func.name : v.name;
-		return '<function' + (name === '' ? '' : ':') + name + '>';
+		return '<function>';
 	}
 
 	if (type === 'boolean')
@@ -2072,6 +2071,13 @@ var _elm_lang$core$List$sortWith = _elm_lang$core$Native_List.sortWith;
 var _elm_lang$core$List$sortBy = _elm_lang$core$Native_List.sortBy;
 var _elm_lang$core$List$sort = function (xs) {
 	return A2(_elm_lang$core$List$sortBy, _elm_lang$core$Basics$identity, xs);
+};
+var _elm_lang$core$List$singleton = function (value) {
+	return {
+		ctor: '::',
+		_0: value,
+		_1: {ctor: '[]'}
+	};
 };
 var _elm_lang$core$List$drop = F2(
 	function (n, list) {
@@ -3520,15 +3526,8 @@ function setupIncomingPort(name, callback)
 		sentBeforeInit.push(value);
 	}
 
-	function postInitSend(incomingValue)
+	function postInitSend(value)
 	{
-		var result = A2(_elm_lang$core$Json_Decode$decodeValue, converter, incomingValue);
-		if (result.ctor === 'Err')
-		{
-			throw new Error('Trying to send an unexpected type of value through port `' + name + '`:\n' + result._0);
-		}
-
-		var value = result._0;
 		var temp = subs;
 		while (temp.ctor !== '[]')
 		{
@@ -3539,7 +3538,13 @@ function setupIncomingPort(name, callback)
 
 	function send(incomingValue)
 	{
-		currentSend(incomingValue);
+		var result = A2(_elm_lang$core$Json_Decode$decodeValue, converter, incomingValue);
+		if (result.ctor === 'Err')
+		{
+			throw new Error('Trying to send an unexpected type of value through port `' + name + '`:\n' + result._0);
+		}
+
+		currentSend(result._0);
 	}
 
 	return { send: send };
@@ -3963,7 +3968,7 @@ function endsWith(sub, str)
 function indexes(sub, str)
 {
 	var subLen = sub.length;
-	
+
 	if (subLen < 1)
 	{
 		return _elm_lang$core$Native_List.Nil;
@@ -3976,74 +3981,78 @@ function indexes(sub, str)
 	{
 		is.push(i);
 		i = i + subLen;
-	}	
-	
+	}
+
 	return _elm_lang$core$Native_List.fromArray(is);
 }
+
 
 function toInt(s)
 {
 	var len = s.length;
+
+	// if empty
 	if (len === 0)
 	{
-		return _elm_lang$core$Result$Err("could not convert string '" + s + "' to an Int" );
+		return intErr(s);
 	}
-	var start = 0;
-	if (s[0] === '-')
+
+	// if hex
+	var c = s[0];
+	if (c === '0' && s[1] === 'x')
 	{
-		if (len === 1)
+		for (var i = 2; i < len; ++i)
 		{
-			return _elm_lang$core$Result$Err("could not convert string '" + s + "' to an Int" );
+			var c = s[i];
+			if (('0' <= c && c <= '9') || ('A' <= c && c <= 'F') || ('a' <= c && c <= 'f'))
+			{
+				continue;
+			}
+			return intErr(s);
 		}
-		start = 1;
+		return _elm_lang$core$Result$Ok(parseInt(s, 16));
 	}
-	for (var i = start; i < len; ++i)
+
+	// is decimal
+	if (c > '9' || (c < '0' && c !== '-' && c !== '+'))
+	{
+		return intErr(s);
+	}
+	for (var i = 1; i < len; ++i)
 	{
 		var c = s[i];
 		if (c < '0' || '9' < c)
 		{
-			return _elm_lang$core$Result$Err("could not convert string '" + s + "' to an Int" );
+			return intErr(s);
 		}
 	}
+
 	return _elm_lang$core$Result$Ok(parseInt(s, 10));
 }
 
+function intErr(s)
+{
+	return _elm_lang$core$Result$Err("could not convert string '" + s + "' to an Int");
+}
+
+
 function toFloat(s)
 {
-	var len = s.length;
-	if (len === 0)
+	// check if it is a hex, octal, or binary number
+	if (s.length === 0 || /[\sxbo]/.test(s))
 	{
-		return _elm_lang$core$Result$Err("could not convert string '" + s + "' to a Float" );
+		return floatErr(s);
 	}
-	var start = 0;
-	if (s[0] === '-')
-	{
-		if (len === 1)
-		{
-			return _elm_lang$core$Result$Err("could not convert string '" + s + "' to a Float" );
-		}
-		start = 1;
-	}
-	var dotCount = 0;
-	for (var i = start; i < len; ++i)
-	{
-		var c = s[i];
-		if ('0' <= c && c <= '9')
-		{
-			continue;
-		}
-		if (c === '.')
-		{
-			dotCount += 1;
-			if (dotCount <= 1)
-			{
-				continue;
-			}
-		}
-		return _elm_lang$core$Result$Err("could not convert string '" + s + "' to a Float" );
-	}
-	return _elm_lang$core$Result$Ok(parseFloat(s));
+	var n = +s;
+	// faster isNaN check
+	return n === n ? _elm_lang$core$Result$Ok(n) : floatErr(s);
 }
+
+function floatErr(s)
+{
+	return _elm_lang$core$Result$Err("could not convert string '" + s + "' to a Float");
+}
+
 
 function toList(str)
 {
@@ -5283,11 +5292,6 @@ function badToString(problem)
 				problem = problem.rest;
 				break;
 
-			case 'index':
-				context += '[' + problem.index + ']';
-				problem = problem.rest;
-				break;
-
 			case 'oneOf':
 				var problems = problem.problems;
 				for (var i = 0; i < problems.length; i++)
@@ -6015,9 +6019,9 @@ function on(name, options, decoder)
 
 function equalEvents(a, b)
 {
-	if (!a.options === b.options)
+	if (a.options !== b.options)
 	{
-		if (a.stopPropagation !== b.stopPropagation || a.preventDefault !== b.preventDefault)
+		if (a.options.stopPropagation !== b.options.stopPropagation || a.options.preventDefault !== b.options.preventDefault)
 		{
 			return false;
 		}
@@ -7293,7 +7297,7 @@ function normalRenderer(parentNode, view)
 var rAF =
 	typeof requestAnimationFrame !== 'undefined'
 		? requestAnimationFrame
-		: function(callback) { callback(); };
+		: function(callback) { setTimeout(callback, 1000 / 60); };
 
 function makeStepper(domNode, view, initialVirtualNode, eventNode)
 {
@@ -8256,6 +8260,127 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
+var _user$project$Main$viewServiceEmbed = function (model) {
+	return A2(
+		_elm_lang$html$Html$iframe,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$src(
+				_elm_lang$core$String$concat(
+					{
+						ctor: '::',
+						_0: 'http://',
+						_1: {
+							ctor: '::',
+							_0: model.hostname,
+							_1: {
+								ctor: '::',
+								_0: ':6080/vnc_auto.html?host=',
+								_1: {
+									ctor: '::',
+									_0: model.hostname,
+									_1: {
+										ctor: '::',
+										_0: '&port=',
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$core$Basics$toString(
+												A2(
+													_elm_lang$core$Maybe$withDefault,
+													0,
+													_elm_lang$core$List$head(
+														A2(
+															_elm_lang$core$List$map,
+															function (n) {
+																return n.websockify_port;
+															},
+															A2(
+																_elm_lang$core$List$filter,
+																function (n) {
+																	return _elm_lang$core$Native_Utils.eq(n.name, model.selected_service_name);
+																},
+																model.services))))),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						}
+					})),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$height(600),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$width(1000),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		{ctor: '[]'});
+};
+var _user$project$Main$viewStatusInfo = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$p,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(
+						_elm_lang$core$String$concat(
+							{
+								ctor: '::',
+								_0: 'Selected service: ',
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$core$Maybe$withDefault,
+										'',
+										_elm_lang$core$List$head(
+											A2(
+												_elm_lang$core$List$map,
+												function (n) {
+													return n.name;
+												},
+												A2(
+													_elm_lang$core$List$filter,
+													function (n) {
+														return _elm_lang$core$Native_Utils.eq(n.name, model.selected_service_name);
+													},
+													model.services)))),
+									_1: {ctor: '[]'}
+								}
+							})),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$p,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							_elm_lang$core$String$concat(
+								{
+									ctor: '::',
+									_0: 'URL: ',
+									_1: {
+										ctor: '::',
+										_0: model.hostname,
+										_1: {ctor: '[]'}
+									}
+								})),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
 var _user$project$Main$update = F2(
 	function (message, model) {
 		var _p0 = message;
@@ -8309,14 +8434,10 @@ var _user$project$Main$Service = F2(
 var _user$project$Main$ServiceSelect = function (a) {
 	return {ctor: 'ServiceSelect', _0: a};
 };
-var _user$project$Main$view = function (model) {
+var _user$project$Main$viewServicesList = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('container'),
-			_1: {ctor: '[]'}
-		},
+		{ctor: '[]'},
 		{
 			ctor: '::',
 			_0: A2(
@@ -8369,122 +8490,28 @@ var _user$project$Main$view = function (model) {
 								});
 						},
 						model.services)),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Main$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('container'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _user$project$Main$viewServicesList(model),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Main$viewStatusInfo(model),
 				_1: {
 					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$p,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(
-								_elm_lang$core$String$concat(
-									{
-										ctor: '::',
-										_0: 'Selected service: ',
-										_1: {
-											ctor: '::',
-											_0: A2(
-												_elm_lang$core$Maybe$withDefault,
-												'',
-												_elm_lang$core$List$head(
-													A2(
-														_elm_lang$core$List$map,
-														function (n) {
-															return n.name;
-														},
-														A2(
-															_elm_lang$core$List$filter,
-															function (n) {
-																return _elm_lang$core$Native_Utils.eq(n.name, model.selected_service_name);
-															},
-															model.services)))),
-											_1: {ctor: '[]'}
-										}
-									})),
-							_1: {ctor: '[]'}
-						}),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$p,
-							{ctor: '[]'},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(
-									_elm_lang$core$String$concat(
-										{
-											ctor: '::',
-											_0: 'URL: ',
-											_1: {
-												ctor: '::',
-												_0: model.hostname,
-												_1: {ctor: '[]'}
-											}
-										})),
-								_1: {ctor: '[]'}
-							}),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$iframe,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$src(
-										_elm_lang$core$String$concat(
-											{
-												ctor: '::',
-												_0: 'http://',
-												_1: {
-													ctor: '::',
-													_0: model.hostname,
-													_1: {
-														ctor: '::',
-														_0: ':6080/vnc_auto.html?host=',
-														_1: {
-															ctor: '::',
-															_0: model.hostname,
-															_1: {
-																ctor: '::',
-																_0: '&port=',
-																_1: {
-																	ctor: '::',
-																	_0: _elm_lang$core$Basics$toString(
-																		A2(
-																			_elm_lang$core$Maybe$withDefault,
-																			0,
-																			_elm_lang$core$List$head(
-																				A2(
-																					_elm_lang$core$List$map,
-																					function (n) {
-																						return n.websockify_port;
-																					},
-																					A2(
-																						_elm_lang$core$List$filter,
-																						function (n) {
-																							return _elm_lang$core$Native_Utils.eq(n.name, model.selected_service_name);
-																						},
-																						model.services))))),
-																	_1: {ctor: '[]'}
-																}
-															}
-														}
-													}
-												}
-											})),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$height(600),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$width(1000),
-											_1: {ctor: '[]'}
-										}
-									}
-								},
-								{ctor: '[]'}),
-							_1: {ctor: '[]'}
-						}
-					}
+					_0: _user$project$Main$viewServiceEmbed(model),
+					_1: {ctor: '[]'}
 				}
 			}
 		});
