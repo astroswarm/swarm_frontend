@@ -1,8 +1,13 @@
 -- Imports
 
+import Array
 import Html
 import Html.Attributes
 import Html.Events
+import Http
+import HttpBuilder
+import Json.Encode
+import Json.Decode
 import Maybe
 
 -- Model
@@ -15,7 +20,8 @@ type alias Model =
   {
     services: List Service,
     selected_service_name: String,
-    hostname: String
+    hostname: String,
+    uploaded_logs_url: String
   }
 type alias Service =
   {
@@ -45,14 +51,15 @@ init {hostname} =
           }
         ],
        selected_service_name = "Lin Guider (Autoguider)",
-       hostname = hostname
+       hostname = hostname,
+       uploaded_logs_url = ""
     },
     Cmd.none
   )
 
 -- Update
 
-type Message = NoOp | ServiceSelect String
+type Message = NoOp | ServiceSelect String | UploadLogs | UpdateUploadedLogsUrl String
 
 update: Message -> Model -> (Model, Cmd msg)
 
@@ -62,6 +69,27 @@ update message model =
       (model, Cmd.none)
     ServiceSelect new_service ->
       ({ model | selected_service_name = new_service }, Cmd.none)
+    UploadLogs ->
+      let
+        url = "http://localhost:8081/api/execute_command"
+        request = Http.post (succeed "") url
+        cmd = request.
+      in
+        (model, cmd)
+    UpdateUploadedLogsUrl url ->
+      ({ model | uploaded_logs_url = url}, Cmd.none)
+
+uploadLogsParams = Json.Encode.object
+  [
+    ("command", Json.Encode.string("pastebinit")),
+    ("args", Json.Encode.list(
+      [
+        Json.Encode.string("-b"),
+        Json.Encode.string("sprunge.us"),
+        Json.Encode.string("/mnt/host/var/log/syslog")
+      ]
+    ))
+  ]
 
 -- View
 view model =
@@ -95,12 +123,12 @@ view model =
       )
     ],
     Html.p [ ] [
-      Html.text(
-        String.concat([
-          "URL: ",
-          model.hostname
-        ])
-      )
+      Html.a [
+        Html.Attributes.href( "javascript: return false;" ),
+        Html.Events.onClick(
+          UploadLogs
+        )
+      ] [ Html.text "Having trouble? Click here to submit your logs to a developer." ]
     ],
     Html.iframe [
       Html.Attributes.src(
@@ -123,6 +151,15 @@ view model =
       Html.Attributes.width 1000
     ] []
   ]
+--
+--handleUploadLogsComplete : Result Http.Error (List String) -> Html.Html msg
+--handleUploadLogsComplete result = Html.text "foo"
+--
+--uploadLogs : Message
+--uploadLogs =
+--  HttpBuilder.post "http://localhost:8081/api/execute_command"
+--    |> HttpBuilder.withJsonBody uploadLogsParams
+--    |> HttpBuilder.send handleUploadLogsComplete
 
 main =
   Html.programWithFlags

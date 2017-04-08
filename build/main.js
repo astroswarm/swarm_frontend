@@ -8410,17 +8410,7 @@ var _user$project$Main$view = function (model) {
 							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(
-									_elm_lang$core$String$concat(
-										{
-											ctor: '::',
-											_0: 'URL: ',
-											_1: {
-												ctor: '::',
-												_0: model.hostname,
-												_1: {ctor: '[]'}
-											}
-										})),
+								_0: _elm_lang$html$Html$text('Having trouble? Click here to submit your logs to a developer.'),
 								_1: {ctor: '[]'}
 							}),
 						_1: {
