@@ -78,51 +78,37 @@ viewServicesList model =
                 Html.Attributes.href "javascript: return false;",
                 Html.Events.onClick (ServiceSelect service.name)
               ] [ Html.text service.name ]
-          ]) model.services
-      )
+          ]
+      ) model.services
+    )
   ]
 
 
 viewStatusInfo model =
   Html.div [] [
     Html.p [ ] [
-        Html.text(
-          String.concat([
-            "Selected service: ",
-            List.filter (\n -> n.name == model.selected_service_name) model.services
-              |> List.map (\n -> n.name)
-              |> List.head
-              |> Maybe.withDefault ""
-          ])
+      Html.text(
+        "Selected service: " ++ (
+          List.filter (\n -> n.name == model.selected_service_name) model.services
+            |> List.map (\n -> n.name)
+            |> List.head
+            |> Maybe.withDefault ""
         )
-      ],
-      Html.p [ ] [
-        Html.text(
-          String.concat([
-            "URL: ",
-            model.hostname
-          ])
-        )
-      ]
+      )
+    ],
+    Html.p [ ] [ Html.text ("URL: " ++ model.hostname) ]
   ]
 
 
 viewServiceEmbed model =
   Html.iframe [
     Html.Attributes.src(
-      String.concat(
-        [
-          "http://",
-          model.hostname,
-          ":6080/vnc_auto.html?host=",
-          model.hostname,
-          "&port=", toString(
-            List.filter (\n -> n.name == model.selected_service_name) model.services
-              |> List.map (\n -> n.websockify_port)
-              |> List.head
-              |> Maybe.withDefault 0
-          )
-        ]
+      "http://" ++ model.hostname ++ ":6080/vnc_auto.html?host=" ++ model.hostname ++ "&port=" ++ (
+        List.filter (\n -> n.name == model.selected_service_name) model.services
+          |> List.map (\n -> n.websockify_port)
+          |> List.head
+          |> Maybe.withDefault 0
+          |> toString
       )
     ),
     Html.Attributes.height 600,

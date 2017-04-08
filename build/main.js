@@ -8266,47 +8266,37 @@ var _user$project$Main$viewServiceEmbed = function (model) {
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html_Attributes$src(
-				_elm_lang$core$String$concat(
-					{
-						ctor: '::',
-						_0: 'http://',
-						_1: {
-							ctor: '::',
-							_0: model.hostname,
-							_1: {
-								ctor: '::',
-								_0: ':6080/vnc_auto.html?host=',
-								_1: {
-									ctor: '::',
-									_0: model.hostname,
-									_1: {
-										ctor: '::',
-										_0: '&port=',
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$core$Basics$toString(
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'http://',
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						model.hostname,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							':6080/vnc_auto.html?host=',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								model.hostname,
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'&port=',
+									_elm_lang$core$Basics$toString(
+										A2(
+											_elm_lang$core$Maybe$withDefault,
+											0,
+											_elm_lang$core$List$head(
 												A2(
-													_elm_lang$core$Maybe$withDefault,
-													0,
-													_elm_lang$core$List$head(
-														A2(
-															_elm_lang$core$List$map,
-															function (n) {
-																return n.websockify_port;
-															},
-															A2(
-																_elm_lang$core$List$filter,
-																function (n) {
-																	return _elm_lang$core$Native_Utils.eq(n.name, model.selected_service_name);
-																},
-																model.services))))),
-											_1: {ctor: '[]'}
-										}
-									}
-								}
-							}
-						}
-					})),
+													_elm_lang$core$List$map,
+													function (n) {
+														return n.websockify_port;
+													},
+													A2(
+														_elm_lang$core$List$filter,
+														function (n) {
+															return _elm_lang$core$Native_Utils.eq(n.name, model.selected_service_name);
+														},
+														model.services))))))))))),
 			_1: {
 				ctor: '::',
 				_0: _elm_lang$html$Html_Attributes$height(600),
@@ -8331,30 +8321,24 @@ var _user$project$Main$viewStatusInfo = function (model) {
 				{
 					ctor: '::',
 					_0: _elm_lang$html$Html$text(
-						_elm_lang$core$String$concat(
-							{
-								ctor: '::',
-								_0: 'Selected service: ',
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$core$Maybe$withDefault,
-										'',
-										_elm_lang$core$List$head(
-											A2(
-												_elm_lang$core$List$map,
-												function (n) {
-													return n.name;
-												},
-												A2(
-													_elm_lang$core$List$filter,
-													function (n) {
-														return _elm_lang$core$Native_Utils.eq(n.name, model.selected_service_name);
-													},
-													model.services)))),
-									_1: {ctor: '[]'}
-								}
-							})),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Selected service: ',
+							A2(
+								_elm_lang$core$Maybe$withDefault,
+								'',
+								_elm_lang$core$List$head(
+									A2(
+										_elm_lang$core$List$map,
+										function (n) {
+											return n.name;
+										},
+										A2(
+											_elm_lang$core$List$filter,
+											function (n) {
+												return _elm_lang$core$Native_Utils.eq(n.name, model.selected_service_name);
+											},
+											model.services)))))),
 					_1: {ctor: '[]'}
 				}),
 			_1: {
@@ -8365,16 +8349,7 @@ var _user$project$Main$viewStatusInfo = function (model) {
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html$text(
-							_elm_lang$core$String$concat(
-								{
-									ctor: '::',
-									_0: 'URL: ',
-									_1: {
-										ctor: '::',
-										_0: model.hostname,
-										_1: {ctor: '[]'}
-									}
-								})),
+							A2(_elm_lang$core$Basics_ops['++'], 'URL: ', model.hostname)),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
