@@ -71,6 +71,13 @@ update message model =
       ({ model | uploaded_log_url = (toString error) }, Cmd.none)
 
 
+-- DECODERS
+
+logsUploadedDecoder : Json.Decode.Decoder String
+logsUploadedDecoder =
+  Json.Decode.field "output" Json.Decode.string
+
+
 -- COMMANDS
 
 uploadLogs : Cmd Msg
@@ -90,11 +97,6 @@ uploadLogs =
   in
     Http.post url body logsUploadedDecoder
       |> Http.send LogsUploaded
-
-
-logsUploadedDecoder : Json.Decode.Decoder String
-logsUploadedDecoder =
-  Json.Decode.field "output" Json.Decode.string
 
 
 -- VIEW
