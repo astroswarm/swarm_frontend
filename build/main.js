@@ -9073,8 +9073,11 @@ var _user$project$Main$Model = F4(
 var _user$project$Main$LogsUploaded = function (a) {
 	return {ctor: 'LogsUploaded', _0: a};
 };
-var _user$project$Main$uploadLogs = function () {
-	var url = 'http://localhost:8001/api/execute_command';
+var _user$project$Main$uploadLogs = function (model) {
+	var url = A2(
+		_elm_lang$core$Basics_ops['++'],
+		'http://',
+		A2(_elm_lang$core$Basics_ops['++'], model.hostname, ':8001/api/execute_command'));
 	var body = _elm_lang$http$Http$jsonBody(
 		_elm_lang$core$Json_Encode$object(
 			{
@@ -9111,7 +9114,7 @@ var _user$project$Main$uploadLogs = function () {
 		_elm_lang$http$Http$send,
 		_user$project$Main$LogsUploaded,
 		A3(_elm_lang$http$Http$post, url, body, _user$project$Main$logsUploadedDecoder));
-}();
+};
 var _user$project$Main$update = F2(
 	function (message, model) {
 		var _p2 = message;
@@ -9127,7 +9130,11 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UploadLogs':
-				return {ctor: '_Tuple2', _0: model, _1: _user$project$Main$uploadLogs};
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _user$project$Main$uploadLogs(model)
+				};
 			default:
 				if (_p2._0.ctor === 'Ok') {
 					var url = A2(

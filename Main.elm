@@ -59,7 +59,7 @@ update message model =
     ServiceSelect new_service ->
       ({ model | selected_service_name = new_service }, Cmd.none)
     UploadLogs ->
-      (model, uploadLogs)
+      (model, uploadLogs model)
     LogsUploaded (Ok output) ->
       let
         url =
@@ -80,8 +80,8 @@ logsUploadedDecoder =
 
 -- COMMANDS
 
-uploadLogs : Cmd Msg
-uploadLogs =
+uploadLogs : Model -> Cmd Msg
+uploadLogs model =
   let
     body = Json.Encode.object [
       ("command", Json.Encode.string "pastebinit"),
@@ -93,7 +93,7 @@ uploadLogs =
         ]
       ))]
       |> Http.jsonBody
-    url = "http://localhost:8001/api/execute_command"
+    url = "http://" ++ model.hostname ++ ":8001/api/execute_command"
   in
     Http.post url body logsUploadedDecoder
       |> Http.send LogsUploaded
