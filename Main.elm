@@ -25,7 +25,7 @@ type alias Model =
 
 -- Model Initialization
 
-init : Flags -> (Model, Cmd Message)
+init : Flags -> (Model, Cmd Msg)
 init {hostname} =
   (
     {
@@ -43,9 +43,9 @@ init {hostname} =
 
 -- Update
 
-type Message = NoOp | ServiceSelect String
+type Msg = NoOp | ServiceSelect String
 
-update: Message -> Model -> (Model, Cmd msg)
+update: Msg -> Model -> (Model, Cmd msg)
 
 update message model =
   case message of
@@ -55,7 +55,9 @@ update message model =
       ({ model | selected_service_name = new_service }, Cmd.none)
 
 
-view : Model -> Html.Html Message
+-- VIEW
+
+view : Model -> Html.Html Msg
 view model =
   let
     viewServicesList =
@@ -116,7 +118,7 @@ view model =
     ]
 
 
-main : Program Flags Model Message
+main : Program Flags Model Msg
 main =
   Html.programWithFlags
     {
