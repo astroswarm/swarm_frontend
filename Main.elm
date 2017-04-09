@@ -3,6 +3,7 @@
 import Bootstrap.Alert
 import Bootstrap.Button
 import Bootstrap.ListGroup
+import Bootstrap.Navbar
 import Bootstrap.CDN
 import Html
 import Html.Attributes
@@ -16,43 +17,50 @@ import Maybe
 
 type alias Flags =
   {
-    hostname: String
+    hostname : String
   }
 type alias Service =
   {
-    name: String,
-    websockify_port: Int
+    name : String,
+    websockify_port : Int
   }
 type alias Model =
   {
-    services: List Service,
-    selected_service_name: String,
-    hostname: String,
-    uploaded_log_url: String
+    services : List Service,
+    selected_service_name : String,
+    hostname : String,
+    uploaded_log_url : String,
+    navbarState : Bootstrap.Navbar.State
   }
 
 -- Model Initialization
 
-init : Flags -> (Model, Cmd Msg)
-init {hostname} =
-  (
-    {
-      services =
-        [
-          Service "Lin Guider (Autoguider)" 6101,
-          Service "PHD2 (Autoguider)" 6102,
-          Service "Open Sky Imager (Camera Controller)" 6103
-        ],
-       selected_service_name = "Lin Guider (Autoguider)",
-       hostname = hostname,
-       uploaded_log_url = ""
-    },
-    Cmd.none
-  )
+initialState : Flags -> (Model, Cmd Msg)
+initialState {hostname} =
+  let
+    (navbarState, navbarCmd) =
+      Bootstrap.Navbar.initialState NavbarMsg
+  in
+    (
+      {
+        services =
+          [
+            Service "Lin Guider (Autoguider)" 6101,
+            Service "PHD2 (Autoguider)" 6102,
+            Service "Open Sky Imager (Camera Controller)" 6103
+          ],
+         selected_service_name = "Lin Guider (Autoguider)",
+         hostname = hostname,
+         uploaded_log_url = "",
+         navbarState = navbarState
+      },
+      navbarCmd
+    )
+
 
 -- Update
 
-type Msg = NoOp | ServiceSelect String | UploadLogs | LogsUploaded (Result Http.Error String)
+type Msg = NoOp | ServiceSelect String | UploadLogs | LogsUploaded (Result Http.Error String) | NavbarMsg Bootstrap.Navbar.State
 
 update: Msg -> Model -> (Model, Cmd Msg)
 
@@ -60,6 +68,8 @@ update message model =
   case message of
     NoOp ->
       (model, Cmd.none)
+    NavbarMsg state ->
+      ({ model | navbarState = state }, Cmd.none)
     ServiceSelect new_service ->
       ({ model | selected_service_name = new_service }, Cmd.none)
     UploadLogs ->
@@ -110,15 +120,28 @@ view model =
   let
     viewServicesList =
       Html.div [] [
-        Bootstrap.ListGroup.ul (
-          List.map (
-            \service ->
-              if service.name == model.selected_service_name then
-                Bootstrap.ListGroup.li [ Bootstrap.ListGroup.active ] [ Html.text service.name ]
-              else
-                Bootstrap.ListGroup.li [] [ Html.a [ Html.Events.onClick (ServiceSelect service.name) ] [ Html.text service.name] ]
-          ) model.services
-        )
+        Bootstrap.Navbar.config NavbarMsg
+          |> Bootstrap.Navbar.withAnimation
+          |> Bootstrap.Navbar.brand [ Html.Attributes.href "#" ] [ Html.text "AstroSwarm" ]
+          |> Bootstrap.Navbar.items [
+            Bootstrap.Navbar.dropdown
+              {
+                id = "serviceSelect",
+                toggle = Bootstrap.Navbar.dropdownToggle [] [ Html.text "Change Service" ],
+                items = (
+                  List.filter (\service -> service.name /= model.selected_service_name) model.services
+                  |> List.map (
+                    \service ->
+                      if service.name == model.selected_service_name then
+                        Bootstrap.Navbar.dropdownItem [] [ Html.text service.name ]
+                      else
+                        Bootstrap.Navbar.dropdownItem [ Html.Events.onClick (ServiceSelect service.name) ] [ Html.text service.name ]
+                  )
+
+                )
+              }
+          ]
+          |> Bootstrap.Navbar.view model.navbarState
       ]
 
 
@@ -169,12 +192,19 @@ view model =
     ]
 
 
+-- SUBSCRIPTIONS
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Bootstrap.Navbar.subscriptions model.navbarState NavbarMsg
+
+
 main : Program Flags Model Msg
 main =
   Html.programWithFlags
     {
-      init = init,
+      init = initialState,
       view = view,
       update = update,
-      subscriptions = \_ -> Sub.none
+      subscriptions = subscriptions
     }
