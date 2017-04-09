@@ -45,7 +45,7 @@ init {hostname} =
 
 type Msg = NoOp | ServiceSelect String
 
-update: Msg -> Model -> (Model, Cmd msg)
+update: Msg -> Model -> (Model, Cmd Msg)
 
 update message model =
   case message of
