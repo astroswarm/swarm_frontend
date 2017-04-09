@@ -82,17 +82,7 @@ view model =
 
     viewStatusInfo =
       Html.div [] [
-        Html.p [ ] [
-          Html.text(
-            "Selected service: " ++ (
-              List.filter (\n -> n.name == model.selected_service_name) model.services
-                |> List.map .name
-                |> List.head
-                |> Maybe.withDefault ""
-            )
-          )
-        ],
-        Html.p [ ] [ Html.text ("URL: " ++ model.hostname) ]
+        Html.p [ ] [ Html.text ("Using host: " ++ model.hostname) ]
       ]
 
 

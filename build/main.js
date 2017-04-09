@@ -8372,39 +8372,10 @@ var _user$project$Main$view = function (model) {
 				{
 					ctor: '::',
 					_0: _elm_lang$html$Html$text(
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							'Selected service: ',
-							A2(
-								_elm_lang$core$Maybe$withDefault,
-								'',
-								_elm_lang$core$List$head(
-									A2(
-										_elm_lang$core$List$map,
-										function (_) {
-											return _.name;
-										},
-										A2(
-											_elm_lang$core$List$filter,
-											function (n) {
-												return _elm_lang$core$Native_Utils.eq(n.name, model.selected_service_name);
-											},
-											model.services)))))),
+						A2(_elm_lang$core$Basics_ops['++'], 'Using host: ', model.hostname)),
 					_1: {ctor: '[]'}
 				}),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$p,
-					{ctor: '[]'},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text(
-							A2(_elm_lang$core$Basics_ops['++'], 'URL: ', model.hostname)),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			}
+			_1: {ctor: '[]'}
 		});
 	var viewServicesList = A2(
 		_elm_lang$html$Html$div,
