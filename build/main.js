@@ -9219,7 +9219,7 @@ var _user$project$Main$view = function (model) {
 				_elm_lang$html$Html$a,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$href('javascript: return false;'),
+					_0: _elm_lang$html$Html_Attributes$href('#'),
 					_1: {
 						ctor: '::',
 						_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$UploadLogs),
@@ -9319,7 +9319,7 @@ var _user$project$Main$view = function (model) {
 										_elm_lang$html$Html$a,
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$href('javascript: return false;'),
+											_0: _elm_lang$html$Html_Attributes$href('#'),
 											_1: {
 												ctor: '::',
 												_0: _elm_lang$html$Html_Events$onClick(

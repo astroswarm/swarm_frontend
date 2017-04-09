@@ -115,7 +115,7 @@ view model =
                   Html.text service.name
                 else
                   Html.a [
-                    Html.Attributes.href "javascript: return false;",
+                    Html.Attributes.href "#",
                     Html.Events.onClick (ServiceSelect service.name)
                   ] [ Html.text service.name ]
               ]
@@ -132,7 +132,7 @@ view model =
     viewUploadLogs =
       Html.p [ ] [
         Html.a [
-          Html.Attributes.href "javascript: return false;",
+          Html.Attributes.href "#",
           Html.Events.onClick UploadLogs
         ] [ Html.text "Having trouble? Click here to upload your logs." ],
         if String.length(model.uploaded_log_url) > 0 then
