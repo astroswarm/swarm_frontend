@@ -8341,8 +8341,8 @@ var _user$project$Main$view = function (model) {
 											_elm_lang$core$List$head(
 												A2(
 													_elm_lang$core$List$map,
-													function (n) {
-														return n.websockify_port;
+													function (_) {
+														return _.websockify_port;
 													},
 													A2(
 														_elm_lang$core$List$filter,
@@ -8381,8 +8381,8 @@ var _user$project$Main$view = function (model) {
 								_elm_lang$core$List$head(
 									A2(
 										_elm_lang$core$List$map,
-										function (n) {
-											return n.name;
+										function (_) {
+											return _.name;
 										},
 										A2(
 											_elm_lang$core$List$filter,

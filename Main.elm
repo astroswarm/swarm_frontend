@@ -86,7 +86,7 @@ view model =
           Html.text(
             "Selected service: " ++ (
               List.filter (\n -> n.name == model.selected_service_name) model.services
-                |> List.map (\n -> n.name)
+                |> List.map .name
                 |> List.head
                 |> Maybe.withDefault ""
             )
@@ -101,7 +101,7 @@ view model =
         Html.Attributes.src(
           "http://" ++ model.hostname ++ ":6080/vnc_auto.html?host=" ++ model.hostname ++ "&port=" ++ (
             List.filter (\n -> n.name == model.selected_service_name) model.services
-              |> List.map (\n -> n.websockify_port)
+              |> List.map .websockify_port
               |> List.head
               |> Maybe.withDefault 0
               |> toString
