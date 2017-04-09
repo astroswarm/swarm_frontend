@@ -77,12 +77,12 @@ uploadLogs : Cmd Msg
 uploadLogs =
   let
     body = Json.Encode.object [
-      ("command", Json.Encode.string("pastebinit")),
-      ("args", Json.Encode.list(
+      ("command", Json.Encode.string "pastebinit"),
+      ("args", Json.Encode.list( 
         [
-          Json.Encode.string("-b"),
-          Json.Encode.string("sprunge.us"),
-          Json.Encode.string("/mnt/host/var/log/syslog")
+          Json.Encode.string "-b",
+          Json.Encode.string "sprunge.us",
+          Json.Encode.string "/mnt/host/var/log/syslog"
         ]
       ))]
       |> Http.jsonBody
