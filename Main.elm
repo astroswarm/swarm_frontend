@@ -11,16 +11,16 @@ type alias Flags =
   {
     hostname: String
   }
+type alias Service =
+  {
+    name: String,
+    websockify_port: Int
+  }
 type alias Model =
   {
     services: List Service,
     selected_service_name: String,
     hostname: String
-  }
-type alias Service =
-  {
-    name: String,
-    websockify_port: Int
   }
 
 -- Model Initialization
@@ -31,18 +31,9 @@ init {hostname} =
     {
       services =
         [
-          {
-            name = "Lin Guider (Autoguider)",
-            websockify_port = 6101
-          },
-          {
-            name = "PHD2 (Autoguider)",
-            websockify_port = 6102
-          },
-          {
-            name = "Open Sky Imager (Camera Controller)",
-            websockify_port = 6103
-          }
+          Service "Lin Guider (Autoguider)" 6101,
+          Service "PHD2 (Autoguider)" 6102,
+          Service "Open Sky Imager (Camera Controller)" 6103
         ],
        selected_service_name = "Lin Guider (Autoguider)",
        hostname = hostname

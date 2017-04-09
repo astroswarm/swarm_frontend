@@ -8275,6 +8275,13 @@ var _user$project$Main$update = F2(
 			};
 		}
 	});
+var _user$project$Main$Flags = function (a) {
+	return {hostname: a};
+};
+var _user$project$Main$Service = F2(
+	function (a, b) {
+		return {name: a, websockify_port: b};
+	});
 var _user$project$Main$init = function (_p1) {
 	var _p2 = _p1;
 	return {
@@ -8282,13 +8289,13 @@ var _user$project$Main$init = function (_p1) {
 		_0: {
 			services: {
 				ctor: '::',
-				_0: {name: 'Lin Guider (Autoguider)', websockify_port: 6101},
+				_0: A2(_user$project$Main$Service, 'Lin Guider (Autoguider)', 6101),
 				_1: {
 					ctor: '::',
-					_0: {name: 'PHD2 (Autoguider)', websockify_port: 6102},
+					_0: A2(_user$project$Main$Service, 'PHD2 (Autoguider)', 6102),
 					_1: {
 						ctor: '::',
-						_0: {name: 'Open Sky Imager (Camera Controller)', websockify_port: 6103},
+						_0: A2(_user$project$Main$Service, 'Open Sky Imager (Camera Controller)', 6103),
 						_1: {ctor: '[]'}
 					}
 				}
@@ -8299,16 +8306,9 @@ var _user$project$Main$init = function (_p1) {
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
 };
-var _user$project$Main$Flags = function (a) {
-	return {hostname: a};
-};
 var _user$project$Main$Model = F3(
 	function (a, b, c) {
 		return {services: a, selected_service_name: b, hostname: c};
-	});
-var _user$project$Main$Service = F2(
-	function (a, b) {
-		return {name: a, websockify_port: b};
 	});
 var _user$project$Main$ServiceSelect = function (a) {
 	return {ctor: 'ServiceSelect', _0: a};
