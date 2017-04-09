@@ -1,6 +1,8 @@
 -- Imports
 
 import Bootstrap.Alert
+import Bootstrap.Button
+import Bootstrap.Modal
 import Bootstrap.Navbar
 import Bootstrap.CDN
 import Html
@@ -28,7 +30,8 @@ type alias Model =
     selected_service_name : String,
     hostname : String,
     uploaded_log_url : String,
-    navbarState : Bootstrap.Navbar.State
+    navbarState : Bootstrap.Navbar.State,
+    uploadLogsModalState : Bootstrap.Modal.State
   }
 
 -- Model Initialization
@@ -50,7 +53,8 @@ initialState {hostname} =
          selected_service_name = "Lin Guider (Autoguider)",
          hostname = hostname,
          uploaded_log_url = "",
-         navbarState = navbarState
+         navbarState = navbarState,
+         uploadLogsModalState = Bootstrap.Modal.hiddenState
       },
       navbarCmd
     )
@@ -58,7 +62,13 @@ initialState {hostname} =
 
 -- Update
 
-type Msg = NoOp | ServiceSelect String | UploadLogs | LogsUploaded (Result Http.Error String) | NavbarMsg Bootstrap.Navbar.State
+type Msg =
+  NoOp
+  | ServiceSelect String
+  | UploadLogs
+  | LogsUploaded (Result Http.Error String)
+  | NavbarMsg Bootstrap.Navbar.State
+  | UploadLogsModalMsg Bootstrap.Modal.State
 
 update: Msg -> Model -> (Model, Cmd Msg)
 
@@ -68,6 +78,8 @@ update message model =
       (model, Cmd.none)
     NavbarMsg state ->
       ({ model | navbarState = state }, Cmd.none)
+    UploadLogsModalMsg state ->
+      ({ model | uploadLogsModalState = state }, Cmd.none)
     ServiceSelect new_service ->
       ({ model | selected_service_name = new_service }, Cmd.none)
     UploadLogs ->
@@ -116,7 +128,7 @@ uploadLogs model =
 view : Model -> Html.Html Msg
 view model =
   let
-    viewServicesList =
+    viewNavbar =
       Html.div [] [
         Bootstrap.Navbar.config NavbarMsg
           |> Bootstrap.Navbar.withAnimation
@@ -142,7 +154,7 @@ view model =
               toggle = Bootstrap.Navbar.dropdownToggle [] [ Html.text "Get Help" ],
               items = [
                 Bootstrap.Navbar.dropdownItem [
-                  Html.Events.onClick (UploadLogs)
+                  Html.Events.onClick (UploadLogsModalMsg Bootstrap.Modal.visibleState)
                 ] [ Html.text "Upload Logs" ]
               ]
             }
@@ -166,7 +178,26 @@ view model =
         else
           Html.text ""
       ]
-      
+
+
+    viewUploadLogsModal =
+        Bootstrap.Modal.config UploadLogsModalMsg
+          |> Bootstrap.Modal.large
+          |> Bootstrap.Modal.h3 [] [ Html.text "Upload Logs" ]
+          |> Bootstrap.Modal.body [] [
+            Html.p [] [ Html.text "If you're having trouble, we want to help!" ],
+            Html.p [] [ Html.text "The easiest way to diagnose your problem is for a developer to examine your system logs. These logs help us piece together a timeline of everything that has happened on your AstroSwarm computer." ],
+            Bootstrap.Alert.warning [
+              Html.p [] [ Html.text "Warning: these logs will be uploaded to a public web server where anybody can look at them. If you use AstroSwarm to handle sensitive data, please do not use this feature." ]
+            ],
+            viewUploadLogs
+          ]
+          |> Bootstrap.Modal.footer [] [
+            Bootstrap.Button.button [Bootstrap.Button.primary, Bootstrap.Button.onClick UploadLogs ] [ Html.text "Upload Logs" ],
+            Bootstrap.Button.button [Bootstrap.Button.secondary, Bootstrap.Button.onClick (UploadLogsModalMsg Bootstrap.Modal.hiddenState)] [ Html.text "Close" ]
+          ]
+          |> Bootstrap.Modal.view model.uploadLogsModalState
+
 
     viewServiceEmbed =
       Html.iframe [
@@ -185,8 +216,8 @@ view model =
   in
     Html.div [ Html.Attributes.class "container" ] [
       Bootstrap.CDN.stylesheet,
-      viewServicesList,
-      viewUploadLogs,
+      viewNavbar,
+      viewUploadLogsModal,
       viewServiceEmbed
     ]
 
