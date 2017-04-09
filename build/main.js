@@ -11053,20 +11053,6 @@ var _user$project$Main$view = function (model) {
 				_1: {ctor: '[]'}
 			}
 		});
-	var viewStatusInfo = A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: _rundis$elm_bootstrap$Bootstrap_Alert$info(
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(
-						A2(_elm_lang$core$Basics_ops['++'], 'Using host: ', model.hostname)),
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		});
 	var viewServicesList = A2(
 		_elm_lang$html$Html$div,
 		{ctor: '[]'},
@@ -11126,15 +11112,11 @@ var _user$project$Main$view = function (model) {
 				_0: viewServicesList,
 				_1: {
 					ctor: '::',
-					_0: viewStatusInfo,
+					_0: viewUploadLogs,
 					_1: {
 						ctor: '::',
-						_0: viewUploadLogs,
-						_1: {
-							ctor: '::',
-							_0: viewServiceEmbed,
-							_1: {ctor: '[]'}
-						}
+						_0: viewServiceEmbed,
+						_1: {ctor: '[]'}
 					}
 				}
 			}

@@ -122,13 +122,6 @@ view model =
       ]
 
 
-    viewStatusInfo =
-      Html.div [] [
-        Bootstrap.Alert.info [
-          Html.text ("Using host: " ++ model.hostname)
-        ]
-      ]
-
     viewUploadLogs =
       Html.div [] [
         Bootstrap.Button.button [
@@ -171,7 +164,6 @@ view model =
     Html.div [ Html.Attributes.class "container" ] [
       Bootstrap.CDN.stylesheet,
       viewServicesList,
-      viewStatusInfo,
       viewUploadLogs,
       viewServiceEmbed
     ]
