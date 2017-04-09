@@ -1,8 +1,6 @@
 -- Imports
 
 import Bootstrap.Alert
-import Bootstrap.Button
-import Bootstrap.ListGroup
 import Bootstrap.Navbar
 import Bootstrap.CDN
 import Html
@@ -124,22 +122,30 @@ view model =
           |> Bootstrap.Navbar.withAnimation
           |> Bootstrap.Navbar.brand [ Html.Attributes.href "#" ] [ Html.text "AstroSwarm" ]
           |> Bootstrap.Navbar.items [
-            Bootstrap.Navbar.dropdown
-              {
-                id = "serviceSelect",
-                toggle = Bootstrap.Navbar.dropdownToggle [] [ Html.text "Change Service" ],
-                items = (
-                  List.filter (\service -> service.name /= model.selected_service_name) model.services
-                  |> List.map (
-                    \service ->
-                      if service.name == model.selected_service_name then
-                        Bootstrap.Navbar.dropdownItem [] [ Html.text service.name ]
-                      else
-                        Bootstrap.Navbar.dropdownItem [ Html.Events.onClick (ServiceSelect service.name) ] [ Html.text service.name ]
-                  )
-
+            Bootstrap.Navbar.dropdown {
+              id = "serviceSelect",
+              toggle = Bootstrap.Navbar.dropdownToggle [] [ Html.text "Change Service" ],
+              items = (
+                List.filter (\service -> service.name /= model.selected_service_name) model.services
+                |> List.map (
+                  \service ->
+                    if service.name == model.selected_service_name then
+                      Bootstrap.Navbar.dropdownItem [] [ Html.text service.name ]
+                    else
+                      Bootstrap.Navbar.dropdownItem [ Html.Events.onClick (ServiceSelect service.name) ] [ Html.text service.name ]
                 )
-              }
+
+              )
+            },
+            Bootstrap.Navbar.dropdown {
+              id = "getHelp",
+              toggle = Bootstrap.Navbar.dropdownToggle [] [ Html.text "Get Help" ],
+              items = [
+                Bootstrap.Navbar.dropdownItem [
+                  Html.Events.onClick (UploadLogs)
+                ] [ Html.text "Upload Logs" ]
+              ]
+            }
           ]
           |> Bootstrap.Navbar.view model.navbarState
       ]
@@ -147,25 +153,18 @@ view model =
 
     viewUploadLogs =
       Html.div [] [
-        Bootstrap.Button.button [
-          Bootstrap.Button.warning, Bootstrap.Button.attrs [
-            Html.Attributes.class "ml-1",
-            Html.Events.onClick UploadLogs
+        if String.length(model.uploaded_log_url) > 0 then
+          Bootstrap.Alert.info [
+          Html.div [ ] [
+            Html.text "Your logs have been uploaded: ",
+            Html.a [
+              Html.Attributes.href model.uploaded_log_url,
+              Html.Attributes.target "_blank"
+            ] [ Html.text model.uploaded_log_url ]
           ]
-        ] [ Html.text "Having trouble? Click here to upload your logs." ],
-
-          if String.length(model.uploaded_log_url) > 0 then
-            Bootstrap.Alert.info [
-            Html.div [ ] [
-              Html.text "Your logs have been uploaded: ",
-              Html.a [
-                Html.Attributes.href model.uploaded_log_url,
-                Html.Attributes.target "_blank"
-              ] [ Html.text model.uploaded_log_url ]
-            ]
-            ]
-          else
-            Html.text ""
+          ]
+        else
+          Html.text ""
       ]
       
 
