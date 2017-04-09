@@ -64,7 +64,7 @@ update message model =
       ({ model | selected_service_name = new_service }, Cmd.none)
 
 
--- View
+view : Model -> Html.Html Message
 view model =
   let
     viewServicesList =
@@ -124,6 +124,8 @@ view model =
       viewServiceEmbed
     ]
 
+
+main : Program Flags Model Message
 main =
   Html.programWithFlags
     {
