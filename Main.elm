@@ -1,5 +1,9 @@
 -- Imports
 
+import Bootstrap.Alert
+import Bootstrap.Button
+import Bootstrap.ListGroup
+import Bootstrap.CDN
 import Html
 import Html.Attributes
 import Html.Events
@@ -85,7 +89,7 @@ uploadLogs model =
   let
     body = Json.Encode.object [
       ("command", Json.Encode.string "pastebinit"),
-      ("args", Json.Encode.list( 
+      ("args", Json.Encode.list(
         [
           Json.Encode.string "-b",
           Json.Encode.string "sprunge.us",
@@ -106,19 +110,13 @@ view model =
   let
     viewServicesList =
       Html.div [] [
-        Html.p [ ] [ Html.text "Choose a service to run:" ],
-        Html.ul [ Html.Attributes.class "collection" ] (
-          List.map (\
-            service ->
-              Html.li [ Html.Attributes.class "collection-item" ] [
-                if service.name == model.selected_service_name then
-                  Html.text service.name
-                else
-                  Html.a [
-                    Html.Attributes.href "#",
-                    Html.Events.onClick (ServiceSelect service.name)
-                  ] [ Html.text service.name ]
-              ]
+        Bootstrap.ListGroup.ul (
+          List.map (
+            \service ->
+              if service.name == model.selected_service_name then
+                Bootstrap.ListGroup.li [ Bootstrap.ListGroup.active ] [ Html.text service.name ]
+              else
+                Bootstrap.ListGroup.li [] [ Html.a [ Html.Events.onClick (ServiceSelect service.name) ] [ Html.text service.name] ]
           ) model.services
         )
       ]
@@ -126,27 +124,34 @@ view model =
 
     viewStatusInfo =
       Html.div [] [
-        Html.p [ ] [ Html.text ("Using host: " ++ model.hostname) ]
+        Bootstrap.Alert.info [
+          Html.text ("Using host: " ++ model.hostname)
+        ]
       ]
 
     viewUploadLogs =
-      Html.p [ ] [
-        Html.a [
-          Html.Attributes.href "#",
-          Html.Events.onClick UploadLogs
-        ] [ Html.text "Having trouble? Click here to upload your logs." ],
-        if String.length(model.uploaded_log_url) > 0 then
-          Html.p [ ] [
-            Html.text "Your logs have been uploaded: ",
-            Html.a [
-              Html.Attributes.href model.uploaded_log_url,
-              Html.Attributes.target "_blank"
-            ] [ Html.text model.uploaded_log_url ]
+      Html.div [] [
+        Bootstrap.Button.button [
+          Bootstrap.Button.warning, Bootstrap.Button.attrs [
+            Html.Attributes.class "ml-1",
+            Html.Events.onClick UploadLogs
           ]
-        else
-          Html.text ""
-      ]
+        ] [ Html.text "Having trouble? Click here to upload your logs." ],
 
+          if String.length(model.uploaded_log_url) > 0 then
+            Bootstrap.Alert.info [
+            Html.div [ ] [
+              Html.text "Your logs have been uploaded: ",
+              Html.a [
+                Html.Attributes.href model.uploaded_log_url,
+                Html.Attributes.target "_blank"
+              ] [ Html.text model.uploaded_log_url ]
+            ]
+            ]
+          else
+            Html.text ""
+      ]
+      
 
     viewServiceEmbed =
       Html.iframe [
@@ -164,6 +169,7 @@ view model =
       ] []
   in
     Html.div [ Html.Attributes.class "container" ] [
+      Bootstrap.CDN.stylesheet,
       viewServicesList,
       viewStatusInfo,
       viewUploadLogs,
