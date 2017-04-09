@@ -31,7 +31,8 @@ type alias Model =
     hostname : String,
     uploaded_log_url : String,
     navbarState : Bootstrap.Navbar.State,
-    uploadLogsModalState : Bootstrap.Modal.State
+    uploadLogsModalState : Bootstrap.Modal.State,
+    uploadLogsInFlight : Bool
   }
 
 -- Model Initialization
@@ -54,7 +55,8 @@ initialState {hostname} =
          hostname = hostname,
          uploaded_log_url = "",
          navbarState = navbarState,
-         uploadLogsModalState = Bootstrap.Modal.hiddenState
+         uploadLogsModalState = Bootstrap.Modal.hiddenState,
+         uploadLogsInFlight = False
       },
       navbarCmd
     )
@@ -65,10 +67,10 @@ initialState {hostname} =
 type Msg =
   NoOp
   | ServiceSelect String
-  | UploadLogs
   | LogsUploaded (Result Http.Error String)
   | NavbarMsg Bootstrap.Navbar.State
   | UploadLogsModalMsg Bootstrap.Modal.State
+  | UploadLogs
 
 update: Msg -> Model -> (Model, Cmd Msg)
 
@@ -83,16 +85,16 @@ update message model =
     ServiceSelect new_service ->
       ({ model | selected_service_name = new_service }, Cmd.none)
     UploadLogs ->
-      (model, uploadLogs model)
+      ({model | uploadLogsInFlight = True}, uploadLogs model)
     LogsUploaded (Ok output) ->
       let
         url =
           output
           |> String.filter (\c -> c /= '\n')
       in
-        ({ model | uploaded_log_url = url }, Cmd.none)
+        ({ model | uploaded_log_url = url, uploadLogsInFlight = False }, Cmd.none)
     LogsUploaded (Err error) ->
-      ({ model | uploaded_log_url = (toString error) }, Cmd.none)
+      ({ model | uploaded_log_url = (toString error), uploadLogsInFlight = False }, Cmd.none)
 
 
 -- DECODERS
@@ -103,6 +105,7 @@ logsUploadedDecoder =
 
 
 -- COMMANDS
+
 
 uploadLogs : Model -> Cmd Msg
 uploadLogs model =
@@ -146,7 +149,6 @@ view model =
                     else
                       Bootstrap.Navbar.dropdownItem [ Html.Events.onClick (ServiceSelect service.name) ] [ Html.text service.name ]
                 )
-
               )
             },
             Bootstrap.Navbar.dropdown {
@@ -193,7 +195,14 @@ view model =
             viewUploadLogs
           ]
           |> Bootstrap.Modal.footer [] [
-            Bootstrap.Button.button [Bootstrap.Button.primary, Bootstrap.Button.onClick UploadLogs ] [ Html.text "Upload Logs" ],
+            Bootstrap.Button.button [
+              Bootstrap.Button.primary, Bootstrap.Button.disabled (model.uploadLogsInFlight), Bootstrap.Button.onClick (UploadLogs)
+            ] [ Html.text (
+              if model.uploadLogsInFlight then
+                "Uploading..."
+              else
+                "Upload Logs"
+            ) ],
             Bootstrap.Button.button [Bootstrap.Button.secondary, Bootstrap.Button.onClick (UploadLogsModalMsg Bootstrap.Modal.hiddenState)] [ Html.text "Close" ]
           ]
           |> Bootstrap.Modal.view model.uploadLogsModalState
