@@ -139,7 +139,7 @@ view model =
           |> Bootstrap.Navbar.items [
             Bootstrap.Navbar.dropdown {
               id = "serviceSelect",
-              toggle = Bootstrap.Navbar.dropdownToggle [] [ Html.text "Change Service" ],
+              toggle = Bootstrap.Navbar.dropdownToggle [] [ Html.text model.selected_service_name ],
               items = (
                 List.filter (\service -> service.name /= model.selected_service_name) model.services
                 |> List.map (

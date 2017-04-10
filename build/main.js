@@ -13576,7 +13576,7 @@ var _user$project$Main$view = function (model) {
 									{ctor: '[]'},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text('Change Service'),
+										_0: _elm_lang$html$Html$text(model.selected_service_name),
 										_1: {ctor: '[]'}
 									}),
 								items: A2(
